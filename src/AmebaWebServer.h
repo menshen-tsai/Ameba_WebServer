@@ -161,7 +161,7 @@ class AmebaWebServer
       };		
 
 	  
-      WiFiServer  _server=NULL;
+      WiFiServer  _server;
 	  
       WiFiClient  _currentClient;
       HTTPMethod  _currentMethod;
@@ -186,7 +186,7 @@ class AmebaWebServer
 
     private:
       static void init();
-////	  uint16_t _port;
+	  uint16_t _port;
 	
 };
 
