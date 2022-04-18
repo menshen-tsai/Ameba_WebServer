@@ -287,6 +287,13 @@ void AmebaWebServer::_handleRequest() {
   while(_currentClient.connected() && maxWait--) {
     delay(1);
   }
+  
+#ifdef DEBUG
+  DEBUG_OUTPUT.println("Stop Client");
+#endif
+
+  _currentClient.stop();
+  
   _currentClient   = WiFiClient();
   _currentUri      = String();
   
