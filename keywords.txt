@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map For AmebaWebServer
+#######################################
+
+#######################################
+# Library (KEYWORD1)
+#######################################
+
+AmebaWebServer	KEYWORD1	WiFi
+
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+AmebaWebServer	KEYWORD1	WebServerConstructor
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+firmwareVersion	KEYWORD2
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
