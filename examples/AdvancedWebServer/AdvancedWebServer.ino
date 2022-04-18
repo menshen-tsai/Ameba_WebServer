@@ -52,13 +52,13 @@ void handleRoot() {
 "<html>\
   <head>\
     <meta http-equiv='refresh' content='5'/>\
-    <title>ESP8266 Demo</title>\
+    <title>Ameba RTL8722DM-MINI Demo</title>\
     <style>\
       body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
     </style>\
   </head>\
   <body>\
-    <h1>Hello from ESP8266!</h1>\
+    <h1>Hello from Ameba 8722DM-MINI !</h1>\
     <p>Uptime: %02d:%02d:%02d</p>\
     <img src=\"/test.svg\" />\
   </body>\
