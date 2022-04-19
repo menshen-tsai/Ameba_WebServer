@@ -33,8 +33,8 @@
 #include <AmebaWebServer.h>
 //#include <mDNS.h>
 
-const char *ssid = "YourSSIDHere";
-const char *password = "YourPSKHere";
+char *ssid = "YourSSIDHere";
+char *password = "YourPSKHere";
 
 AmebaWebServer server ( 80 );
 
