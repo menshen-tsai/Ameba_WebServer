@@ -38,7 +38,7 @@ char *password = "YourPSKHere";
 
 AmebaWebServer server ( 80 );
 
-const int led = 13;
+const int led = LED_G;
 
 void handleRoot() {
 	digitalWrite ( led, 1 );
