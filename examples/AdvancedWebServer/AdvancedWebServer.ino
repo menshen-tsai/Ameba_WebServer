@@ -41,7 +41,7 @@ AmebaWebServer server ( 80 );
 const int led = LED_G;
 
 void handleRoot() {
-	digitalWrite ( led, 1 );
+	digitalWrite ( LED_G, 1 );
 	char temp[400];
 	int sec = millis() / 1000;
 	int min = sec / 60;
@@ -67,11 +67,12 @@ void handleRoot() {
 		hr, min % 60, sec % 60
 	);
 	server.send ( 200, "text/html", temp );
-	digitalWrite ( led, 0 );
+	delay(1000);
+	digitalWrite ( LED_G, 0 );
 }
 
 void handleNotFound() {
-	digitalWrite ( led, 1 );
+	digitalWrite ( LED_B, 1 );
 	String message = "File Not Found\n\n";
 	message += "URI: ";
 	message += server.uri();
@@ -86,12 +87,15 @@ void handleNotFound() {
 	}
 
 	server.send ( 404, "text/plain", message );
-	digitalWrite ( led, 0 );
+	delay(1000);
+	digitalWrite ( LED_B, 0 );
 }
 
 void setup ( void ) {
 	pinMode ( LED_B, OUTPUT );
+	pinMode ( LED_G, OUTPUT );
 	digitalWrite ( LED_B, 0 );
+	digitalWrite ( LED_G, 0 );
 	Serial.begin ( 115200 );
 	WiFi.begin ( ssid, password );
 	Serial.println ( "" );
