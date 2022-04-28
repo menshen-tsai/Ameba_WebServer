@@ -25,6 +25,7 @@
 #include "wifi_drv.h"
 #include "wiring.h"
 
+
 // #define DEBUG
 #define DEBUG_OUTPUT Serial
 
@@ -94,6 +95,10 @@ void AmebaWebServer::_addRequestHandler(RequestHandler* handler) {
       _lastHandler->next(handler);
       _lastHandler = handler;
     }
+}
+
+void AmebaWebServer::serveStatic(const char* uri, FatFsSD& fs, const char* path, const char* cache_header) {
+////    _addRequestHandler(new StaticRequestHandler(fs, path, uri, cache_header));
 }
 
 ////
@@ -175,10 +180,27 @@ void AmebaWebServer::send(int code, const char* content_type, const String& cont
 }
 
 void AmebaWebServer::send_P(int code, PGM_P content_type, PGM_P content) {
+    size_t contentLength = 0;
 
+    if (content != NULL) {
+        contentLength = strlen_P(content);
+    }
+    String header;
+    char type[64];
+    memccpy_P((void*)type, (PGM_VOID_P)content_type, 0, sizeof(type));
+    _prepareHeader(header, code, (const char* )type, contentLength);
+    sendContent(header);
+    sendContent_P(content);
+	
 }
 
 void AmebaWebServer::send_P(int code, PGM_P content_type, PGM_P content, size_t contentLength) {
+    String header;
+    char type[64];
+    memccpy_P((void*)type, (PGM_VOID_P)content_type, 0, sizeof(type));
+    _prepareHeader(header, code, (const char* )type, contentLength);
+    sendContent(header);
+    sendContent_P(content, contentLength);
 
 }
 
@@ -211,9 +233,52 @@ void AmebaWebServer::sendContent(const String& content) {
 }
 
 void AmebaWebServer::sendContent_P(PGM_P content) {
+	    char contentUnit[HTTP_DOWNLOAD_UNIT_SIZE + 1];
+
+    contentUnit[HTTP_DOWNLOAD_UNIT_SIZE] = '\0';
+
+    while (content != NULL) {
+        size_t contentUnitLen;
+        PGM_P contentNext;
+
+        // due to the memccpy signature, lots of casts are needed
+        contentNext = (PGM_P)memccpy_P((void*)contentUnit, (PGM_VOID_P)content, 0, HTTP_DOWNLOAD_UNIT_SIZE);
+
+        if (contentNext == NULL) {
+            // no terminator, more data available
+            content += HTTP_DOWNLOAD_UNIT_SIZE;
+            contentUnitLen = HTTP_DOWNLOAD_UNIT_SIZE;
+        }
+        else {
+            // reached terminator. Do not send the terminator
+            contentUnitLen = contentNext - contentUnit - 1;
+            content = NULL;
+        }
+
+        // write is so overloaded, had to use the cast to get it pick the right one
+        _currentClient.write((const char*)contentUnit, contentUnitLen);
+    }
+
 }
 
 void AmebaWebServer::sendContent_P(PGM_P content, size_t size) {
+    char contentUnit[HTTP_DOWNLOAD_UNIT_SIZE + 1];
+    contentUnit[HTTP_DOWNLOAD_UNIT_SIZE] = '\0';
+    size_t remaining_size = size;
+
+    while (content != NULL && remaining_size > 0) {
+        size_t contentUnitLen = HTTP_DOWNLOAD_UNIT_SIZE;
+
+        if (remaining_size < HTTP_DOWNLOAD_UNIT_SIZE) contentUnitLen = remaining_size;
+        // due to the memcpy signature, lots of casts are needed
+        memcpy_P((void*)contentUnit, (PGM_VOID_P)content, contentUnitLen);
+
+        content += contentUnitLen;
+        remaining_size -= contentUnitLen;
+
+        // write is so overloaded, had to use the cast to get it pick the right one
+        _currentClient.write((const char*)contentUnit, contentUnitLen);
+    }
 
 }
 
@@ -250,7 +315,56 @@ bool AmebaWebServer::hasArg(const char* name) {
   return false;
 }
 
+String AmebaWebServer::header(const char* name) {
+  for (int i = 0; i < _headerKeysCount; ++i) {
+    if (_currentHeaders[i].key == name)
+      return _currentHeaders[i].value;
+  }
+  return String();
+}
 
+void AmebaWebServer::collectHeaders(const char* headerKeys[], const size_t headerKeysCount) {
+  _headerKeysCount = headerKeysCount;
+  if (_currentHeaders)
+     delete[]_currentHeaders;
+  _currentHeaders = new RequestArgument[_headerKeysCount];
+  for (int i = 0; i < _headerKeysCount; i++){
+    _currentHeaders[i].key = headerKeys[i];
+  }
+}
+
+
+String AmebaWebServer::header(int i) {
+  if (i < _headerKeysCount)
+    return _currentHeaders[i].value;
+  return String();
+}
+
+String AmebaWebServer::headerName(int i) {
+  if (i < _headerKeysCount)
+    return _currentHeaders[i].key;
+  return String();
+}
+
+int AmebaWebServer::headers() {
+  return _headerKeysCount;
+}
+
+bool AmebaWebServer::hasHeader(const char* name) {
+  for (int i = 0; i < _headerKeysCount; ++i) {
+    if ((_currentHeaders[i].key == name) &&  (_currentHeaders[i].value.length() > 0))
+      return true;
+  }
+  return false;
+}
+
+String AmebaWebServer::hostHeader() {
+  return _hostHeader;
+}
+
+void AmebaWebServer::onFileUpload(THandlerFunction fn) {
+  _fileUploadHandler = fn;
+}
 
 void AmebaWebServer::onNotFound(THandlerFunction fn) {
   _notFoundHandler = fn;

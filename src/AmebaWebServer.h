@@ -22,13 +22,23 @@
 
 #include <Arduino.h>
 #include <inttypes.h>
-//#include <functional>		// Cause compiling errors
+
+#undef max
+#undef min
+#include <functional>		// Cause compiling errors
+
 
 
 extern "C" {
     #include "wl_definitions.h"
     #include "wl_types.h"
+	
+    char* unconstchar(const char* s) ;
+	void *__mempcpy (void *dest, const void *src, size_t len);
+	void *__memccpy (void *dest, const void *src, int c, size_t n);
 }
+
+#define memccpy_P(dest, src, c, n) __memccpy((dest), (src), (c), (n))
 
 #include <WiFi.h>
 //#include "IPAddress.h"
@@ -37,7 +47,7 @@ extern "C" {
 #include "WiFiServer.h"
 //#include "WiFiSSLClient.h"
 //#include "WiFiUdp.h"
-
+#include "FatFs_SD.h"
 
 enum HTTPMethod { HTTP_ANY, HTTP_GET, HTTP_POST, HTTP_PUT, 
                   HTTP_PATCH, HTTP_DELETE, HTTP_OPTIONS };
@@ -82,15 +92,17 @@ class AmebaWebServer
 	  void begin();
 	  void handleClient() ;
 	  
-      //typedef std::function<void(void)> THandlerFunction;
-	  typedef void(*THandlerFunction)(void); 
+      typedef std::function<void(void)> THandlerFunction;
+
 
       void on(const char* uri, THandlerFunction handler);
       void on(const char* uri, HTTPMethod method, THandlerFunction fn);
       void on(const char* uri, HTTPMethod method, THandlerFunction fn, THandlerFunction ufn);
 
       void addHandler(RequestHandler* handler);
+	  
 ////      void serveStatic(const char* uri, fs::FS& fs, const char* path, const char* cache_header = NULL );
+      void serveStatic(const char* uri, FatFsSD& fs, const char* path, const char* cache_header = NULL );
       void onNotFound(THandlerFunction fn);  //called when handler is not assigned
       void onFileUpload(THandlerFunction fn); //handle file uploads
 

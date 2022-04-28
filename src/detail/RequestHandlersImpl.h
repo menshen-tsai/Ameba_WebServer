@@ -1,6 +1,7 @@
 #ifndef REQUESTHANDLERSIMPL_H
 #define REQUESTHANDLERSIMPL_H
 
+#include "FatFs_SD.h"
 #include "RequestHandler.h"
 
 class FunctionRequestHandler : public RequestHandler {
@@ -51,19 +52,22 @@ protected:
     HTTPMethod _method;
 };
 
-#if 0
+
 class StaticRequestHandler : public RequestHandler {
 public:
-    StaticRequestHandler(FS& fs, const char* path, const char* uri, const char* cache_header)
+////    StaticRequestHandler(FS& fs, const char* path, const char* uri, const char* cache_header)
+    StaticRequestHandler(FatFsSD& fs, char* path, char* uri, char* cache_header)	
     : _fs(fs)
     , _uri(uri)
     , _path(path)
     , _cache_header(cache_header)
     {
-        _isFile = fs.exists(path);
-        DEBUGV("StaticRequestHandler: path=%s uri=%s isFile=%d, cache_header=%s\r\n", path, uri, _isFile, cache_header);
+////        _isFile = fs.exists(path);
+        _isFile = fs.isFile(unconstchar(path));
+////        DEBUGV("StaticRequestHandler: path=%s uri=%s isFile=%d, cache_header=%s\r\n", path, uri, _isFile, cache_header);
         _baseUriLength = _uri.length();
     }
+	
 
     bool canHandle(HTTPMethod requestMethod, String requestUri) override  {
         if (requestMethod != HTTP_GET)
@@ -74,12 +78,12 @@ public:
 
         return true;
     }
-
+#if 1
     bool handle(AmebaWebServer& server, HTTPMethod requestMethod, String requestUri) override {
         if (!canHandle(requestMethod, requestUri))
             return false;
 
-        DEBUGV("StaticRequestHandler::handle: request=%s _uri=%s\r\n", requestUri.c_str(), _uri.c_str());
+////        DEBUGV("StaticRequestHandler::handle: request=%s _uri=%s\r\n", requestUri.c_str(), _uri.c_str());
 
         String path(_path);
 
@@ -91,28 +95,33 @@ public:
             // Append whatever follows this URI in request to get the file path.
             path += requestUri.substring(_baseUriLength);
         }
-        DEBUGV("StaticRequestHandler::handle: path=%s, isFile=%d\r\n", path.c_str(), _isFile);
+////        DEBUGV("StaticRequestHandler::handle: path=%s, isFile=%d\r\n", path.c_str(), _isFile);
 
         String contentType = getContentType(path);
 
         // look for gz file, only if the original specified path is not a gz.  So part only works to send gzip via content encoding when a non compressed is asked for
         // if you point the the path to gzip you will serve the gzip as content type "application/x-gzip", not text or javascript etc...
-        if (!path.endsWith(".gz") && !SPIFFS.exists(path))  {
+		
+////    if (!path.endsWith(".gz") && !SPIFFS.exists(path))  {
+        if (!path.endsWith(".gz") && !_fs.isFile(unconstchar(path.c_str())))  {			
             String pathWithGz = path + ".gz";
-            if(SPIFFS.exists(pathWithGz))
+////            if(_fs.exists(pathWithGz))
+            if(_fs.isFile(unconstchar(pathWithGz.c_str())))				
                 path += ".gz";
         }
 
-        File f = _fs.open(path, "r");
+//        File f = _fs.open(path, "r");
+        SdFatFile f = _fs.open(unconstchar(path.c_str()));
         if (!f)
             return false;
 
         if (_cache_header.length() != 0)
             server.sendHeader("Cache-Control", _cache_header);
 
-        server.streamFile(f, contentType);
+////        server.streamFile(f, contentType);
         return true;
     }
+#endif
 
     static String getContentType(const String& path) {
         if (path.endsWith(".html")) return "text/html";
@@ -133,7 +142,8 @@ public:
     }
 
 protected:
-    FS _fs;
+//    FS _fs;
+	FatFsSD _fs;
     String _uri;
     String _path;
     String _cache_header;
@@ -141,6 +151,6 @@ protected:
     size_t _baseUriLength;
 };
 
-#endif				// StaticRequestHandler
+				// StaticRequestHandler
 
 #endif //REQUESTHANDLERSIMPL_H

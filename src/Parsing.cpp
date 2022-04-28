@@ -314,7 +314,7 @@ uint8_t AmebaWebServer::_uploadReadByte(WiFiClient& client){
 
 
 bool AmebaWebServer::_parseForm(WiFiClient& client, String boundary, uint32_t len){
-#if 0	
+
 #ifdef DEBUG
   DEBUG_OUTPUT.print("Parse Form: Boundary: ");
   DEBUG_OUTPUT.print(boundary);
@@ -518,9 +518,7 @@ readfile:
   DEBUG_OUTPUT.print("Error: line: ");
   DEBUG_OUTPUT.println(line);
 #endif
-
-
-#endif	
+	
   return false;
 }
 
