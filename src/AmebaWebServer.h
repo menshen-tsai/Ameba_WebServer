@@ -85,12 +85,13 @@ class AmebaWebServer
 {
     public:
       AmebaWebServer();
-	  AmebaWebServer(uint16_t port);
-	  ~AmebaWebServer();
+      AmebaWebServer(uint16_t port);
+      ~AmebaWebServer();
 
-	  
-	  void begin();
-	  void handleClient() ;
+      void begin();
+      void handleClient() ;
+      virtual void close();
+      void stop();
 	  
       typedef std::function<void(void)> THandlerFunction;
 

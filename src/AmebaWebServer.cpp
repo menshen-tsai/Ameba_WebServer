@@ -132,6 +132,14 @@ void AmebaWebServer::handleClient() {
   _handleRequest();
 }
 
+void AmebaWebServer::close() {
+	_server.close();
+}
+
+void AmebaWebServer::stop() {
+	close();
+}
+
 void AmebaWebServer::sendHeader(const String& name, const String& value, bool first) {
   String headerLine = name;
   headerLine += ": ";
