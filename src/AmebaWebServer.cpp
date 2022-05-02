@@ -98,6 +98,10 @@ void AmebaWebServer::_addRequestHandler(RequestHandler* handler) {
 }
 
 void AmebaWebServer::serveStatic(const char* uri, FatFsSD& fs, const char* path, const char* cache_header) {
+	(void) uri;
+	(void) fs;
+	(void) path;
+	(void) cache_header;
 ////    _addRequestHandler(new StaticRequestHandler(fs, path, uri, cache_header));
 }
 

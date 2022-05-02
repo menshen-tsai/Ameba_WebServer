@@ -49,6 +49,10 @@ extern "C" {
 //#include "WiFiUdp.h"
 #include "FatFs_SD.h"
 
+#define FPSTR(pstr_pointer) (reinterpret_cast<const __FlashStringHelper *>(pstr_pointer))
+
+
+
 enum HTTPMethod { HTTP_ANY, HTTP_GET, HTTP_POST, HTTP_PUT, 
                   HTTP_PATCH, HTTP_DELETE, HTTP_OPTIONS };
 				  
