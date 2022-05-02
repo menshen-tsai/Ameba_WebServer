@@ -322,6 +322,7 @@ bool AmebaWebServer::_parseForm(WiFiClient& client, String boundary, uint32_t le
   DEBUG_OUTPUT.println(len);
 #endif
   String line;
+  (void) len;
   int retry = 0;
   do {
     line = client.readStringUntil('\r');

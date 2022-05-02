@@ -46,15 +46,15 @@ AmebaWebServer::AmebaWebServer(uint16_t port)
 }
 
 AmebaWebServer::~AmebaWebServer() {
-  if (_currentHeaders)
-    delete[]_currentHeaders;
-  _headerKeysCount = 0;
-  RequestHandler* handler = _firstHandler;
-  while (handler) {
-    RequestHandler* next = handler->next();
-    delete handler;
-    handler = next;
-  }
+    if (_currentHeaders)
+      delete[]_currentHeaders;
+    _headerKeysCount = 0;
+    RequestHandler* handler = _firstHandler;
+    while (handler) {
+      RequestHandler* next = handler->next();
+      delete handler;
+      handler = next;
+    }
 }
 
 

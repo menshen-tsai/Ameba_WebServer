@@ -5,6 +5,7 @@ class AmebaWebServer;			// Forward declaration
 
 class RequestHandler {
 public:
+    virtual ~RequestHandler()  { }
     virtual bool canHandle(HTTPMethod method, String uri) { (void) method; (void) uri; return false; }
     virtual bool canUpload(String uri) { (void) uri; return false; }
     virtual bool handle(AmebaWebServer& server, HTTPMethod requestMethod, String requestUri) { (void) server; (void) requestMethod; (void) requestUri; return false; }

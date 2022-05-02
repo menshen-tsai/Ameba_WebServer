@@ -34,8 +34,8 @@ extern "C" {
     #include "wl_types.h"
 	
     char* unconstchar(const char* s) ;
-	void *__mempcpy (void *dest, const void *src, size_t len);
-	void *__memccpy (void *dest, const void *src, int c, size_t n);
+    void *__mempcpy (void *dest, const void *src, size_t len);
+    void *__memccpy (void *dest, const void *src, int c, size_t n);
 }
 
 #define memccpy_P(dest, src, c, n) __memccpy((dest), (src), (c), (n))

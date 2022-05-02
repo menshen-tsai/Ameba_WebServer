@@ -1,9 +1,9 @@
 #include <wifi_conf.h>
 
-uint32_t Ameba_getMAC() {
+uint32_t Ameba_getMAC(void) {
 	char buf[6];
-	int rc;
-	rc = wifi_get_mac_address(buf);
+	
+	wifi_get_mac_address(buf);
 	return (uint32_t)(buf[0]);
 }
 
