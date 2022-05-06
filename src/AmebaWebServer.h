@@ -27,7 +27,7 @@
 #undef min
 #include <functional>		// Cause compiling errors
 
-
+#define PGM_VOID_P const void *
 
 extern "C" {
     #include "wl_definitions.h"
