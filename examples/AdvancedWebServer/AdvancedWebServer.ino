@@ -42,12 +42,12 @@ const int led = LED_G;
 
 void handleRoot() {
 	digitalWrite ( LED_G, 1 );
-	char temp[400];
+	char temp[600];
 	int sec = millis() / 1000;
 	int min = sec / 60;
 	int hr = min / 60;
 
-	snprintf ( temp, 400,
+	snprintf ( temp, 600,
 
 "<html>\
   <head>\
@@ -60,11 +60,12 @@ void handleRoot() {
   <body>\
     <h1>Hello from Ameba 8722DM-MINI !</h1>\
     <p>Uptime: %02d:%02d:%02d</p>\
+    <p>Compile on %s @ %s</p>\
     <img src=\"/test.svg\" />\
   </body>\
 </html>",
 
-		hr, min % 60, sec % 60
+		hr, min % 60, sec % 60, __DATE__, __TIME__
 	);
 	server.send ( 200, "text/html", temp );
 	delay(1000);
